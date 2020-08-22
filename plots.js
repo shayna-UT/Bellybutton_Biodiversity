@@ -31,6 +31,9 @@ function optionChanged(newSample) {
 
     // populate the demographic info panel with that volunteer's info 
     buildMetadata(newSample);
+
+    // displaye the top 10 bacterial species (OTUs) with a bar chart
+    buildCharts(newSample);
 };
 
 // When the dropdown menu option is selected, the ID# is passed in as "sample"
@@ -54,4 +57,51 @@ function buildMetadata(sample) {
             PANEL.append("h6").text(key.toUpperCase() + ": " + value);
           });
     });
+};
+
+// Create a horizontal bar chart to display the top 10 OTUs found in that individual
+function buildCharts(sample){
+
+    d3.json("samples.json").then((data) => {
+        var sampleData = data.samples;
+        var sampleArray = sampleData.filter(sampleObj => sampleObj.id == sample);
+        var sampleObj = sampleArray[0];
+        console.log(sampleObj);
+
+        var sampleValues = sampleObj.sample_values;
+        var sampleOtuId = sampleObj.otu_ids;
+        var sampleOtuIdName = [];
+        for (var i = 0; i < sampleOtuId.length; i++){
+            sampleOtuIdName[i] = "OTU " + sampleOtuId[i];
+        };
+        var sampleOtuLabel = sampleObj.otu_labels;
+
+        var bacteriaObj = [];
+        for (var i = 0; i < sampleValues.length; i++){
+            bacteriaObj.push({
+                value: sampleValues[i],
+                id: sampleOtuIdName[i],
+                label: sampleOtuLabel[i]
+            });
+        };
+        console.log(bacteriaObj);
+
+        var sortedBacteria = bacteriaObj.sort((sample1, sample2) => sample1.vaue - sample2.valaue);
+        var topTenBacteria = sortedBacteria.slice(0,10);
+        console.log(topTenBacteria);
+
+        var trace = {
+            x : topTenBacteria.map((topTenBacteria) => topTenBacteria.value),
+            y : topTenBacteria.map((topTenBacteria) => topTenBacteria.id),
+            type : "bar",
+            orientation: "h"
+        };
+
+        var layout= {
+            title: "Top 10 OTUs Found in Volunteer"
+        };
+
+        Plotly.newPlot("bar", [trace], layout);
+    });
+
 };
