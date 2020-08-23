@@ -67,7 +67,7 @@ function buildCharts(sample){
         var sampleData = data.samples;
         var sampleArray = sampleData.filter(sampleObj => sampleObj.id == sample);
         var sampleObj = sampleArray[0];
-        console.log(sampleObj);
+        //console.log(sampleObj);
 
         var sampleValues = sampleObj.sample_values;
         var sampleOtuId = sampleObj.otu_ids;
@@ -86,11 +86,11 @@ function buildCharts(sample){
                 label: sampleOtuLabel[i]
             });
         };
-        console.log(bacteriaObj);
+        //console.log(bacteriaObj);
 
         var sortedBacteria = bacteriaObj.sort((sample1, sample2) => sample1.vaue - sample2.valaue);
         var topTenBacteria = sortedBacteria.slice(0,10);
-        console.log(topTenBacteria);
+        //console.log(topTenBacteria);
 
         // Build bar chart
         var trace1 = {
@@ -102,7 +102,7 @@ function buildCharts(sample){
         };
 
         var layout1 = {
-            title: "Top 10 OTUs Found in Test Subject",
+            title: { text: "Top 10 OTUs Found in Test Subject", font: {size: 20} },
             xaxis: {
                 title: "Sample Value"
             },
@@ -116,7 +116,6 @@ function buildCharts(sample){
 
         // Build Bubble Chart
         var bubbleSize = bacteriaObj.map((bacteriaObj) => bacteriaObj.value);
-        //var desiredMaxMarkerSize = 40;
 
         var trace2 = {
             x : bacteriaObj.map((bacteriaObj) => bacteriaObj.idNumber),
@@ -129,30 +128,56 @@ function buildCharts(sample){
                 size: bubbleSize,
                 sizemode: "diameter",
                 sizeref: 2,
-                //sizemode: "area",
-                //sizeref: 2.0 * Math.max(bubbleSize) / (desiredMaxMarkerSize ** 2),
                 sizemin: 5
             }
         };
 
         var layout2 = {
-            //title: "Bubble Chart",
+            title: { text: "Bacteria Inside Test Subject's Bellybutton", font: {size: 20} },
             xaxis: {
                 title: "OTU ID"
             },
             yaxis: {
-                title: "Sample Values"
+                title: "Sample Value"
             }
         };
 
         Plotly.newPlot("bubble", [trace2], layout2);
 
         // Build a Gauge for washing frequency
+        var sampleMetadataObj = data.metadata.filter(sampleObj => sampleObj.id == sample)[0];
+        var wfreq = sampleMetadataObj.wfreq;
+        console.log(wfreq);
+
         var trace3 = {
-            domain: {x: [0,9], y: [0,9]}
+            domain: { x : [0, 9], y : [0, 9] },
+            value: wfreq,
+            title: { text: "Scrubs per Week", font: {size:18} },
+            type: "indicator",
+            mode: "gauge+number",
+            gauge: {
+                axis: { range: [null, 9], tickwidth: 2, tickmode: "array", tickvals: [0,1,2,3,4,5,6,7,8,9] },
+                bar: {color: "antiquewhite"},
+                borderwidth: 2,
+                steps: [
+                  { range: [0, 1], color: "aquamarine"},
+                  { range: [1, 2], color: "mediumturquoise"},
+                  { range: [2, 3], color: "darkcyan"},
+                  { range: [3, 4], color: "mediumspringgreen"},
+                  { range: [4, 5], color: "mediumseagreen"},
+                  { range: [5, 6], color: "seagreen"},
+                  { range: [6, 7], color: "plum"},
+                  { range: [7, 8], color: "orchid"},
+                  { range: [8, 9], color: "darkorchid"}
+                ]}
         };
 
-        Plotly.newPlot("gauge", [trace3]);
-    });
+        var layout3 = {
+            title: { text: "Bellybutton Wash Frequency", font: {size: 20} },
+            width: 430,
+            height: 400
+        };
 
+        Plotly.newPlot("gauge", [trace3], layout3);
+    });
 };
