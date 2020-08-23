@@ -10,6 +10,7 @@ function init() {
       
       // Assign the names array (ID#s) inside the data object to a variable
       var sampleNames = data.names;
+      console.log("Welcome!")
       
       // forEach element in the names array (aka forEach ID), 
       sampleNames.forEach((sample) => {
@@ -64,19 +65,27 @@ function buildMetadata(sample) {
 function buildCharts(sample){
 
     d3.json("samples.json").then((data) => {
+        // Assign the samples array inside the data object to a variable
         var sampleData = data.samples;
+        // Filter for an object in the array whose id property matches the ID#
         var sampleArray = sampleData.filter(sampleObj => sampleObj.id == sample);
+        // Since filter() returns an array, assign the object (first item) to a variable
         var sampleObj = sampleArray[0];
         //console.log(sampleObj);
 
+        // Assign the sample_values array insinde the sampleObj to a variable
         var sampleValues = sampleObj.sample_values;
+        // Assign the otu_ids array insinde the sampleObj to a variable
         var sampleOtuId = sampleObj.otu_ids;
+        // Add "OTU" infront of each otu_id number & assign to a variable
         var sampleOtuIdName = [];
         for (var i = 0; i < sampleOtuId.length; i++){
             sampleOtuIdName[i] = "OTU " + sampleOtuId[i];
         };
+        // Assign the otu_labels array insinde the sampleObj to a variable
         var sampleOtuLabel = sampleObj.otu_labels;
 
+        // Add the key-value pairs for each bacteria in Test Subject to bacteriaObj
         var bacteriaObj = [];
         for (var i = 0; i < sampleValues.length; i++){
             bacteriaObj.push({
@@ -88,11 +97,13 @@ function buildCharts(sample){
         };
         //console.log(bacteriaObj);
 
+        // Ensure bacteriaObj has been sorted based on most samples values in descending order
         var sortedBacteria = bacteriaObj.sort((sample1, sample2) => sample1.vaue - sample2.valaue);
+        // Slice the sortedBacteria to only include top 10 (most present) samples
         var topTenBacteria = sortedBacteria.slice(0,10);
         //console.log(topTenBacteria);
 
-        // Build bar chart
+        // Build bar chart of top 10 bacteria samples:
         var trace1 = {
             x : topTenBacteria.map((topTenBacteria) => topTenBacteria.value),
             y : topTenBacteria.map((topTenBacteria) => topTenBacteria.id),
@@ -114,7 +125,7 @@ function buildCharts(sample){
 
         Plotly.newPlot("bar", [trace1], layout1);
 
-        // Build Bubble Chart
+        // Build Bubble Chart for all bacteria samples collected in Test Subject:
         var bubbleSize = bacteriaObj.map((bacteriaObj) => bacteriaObj.value);
 
         var trace2 = {
@@ -144,10 +155,10 @@ function buildCharts(sample){
 
         Plotly.newPlot("bubble", [trace2], layout2);
 
-        // Build a Gauge for washing frequency
+        // Build a Gauge for bellybutton washing frequency
         var sampleMetadataObj = data.metadata.filter(sampleObj => sampleObj.id == sample)[0];
-        var wfreq = sampleMetadataObj.wfreq;
-        console.log(wfreq);
+        var wfreq = sampleMetadataObj.wfreq; // washing frequency of bellybutton for that Test Subject
+        //console.log(wfreq);
 
         var trace3 = {
             domain: { x : [0, 9], y : [0, 9] },
