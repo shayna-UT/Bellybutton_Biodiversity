@@ -13,4 +13,6 @@ For reference, the data is structured as an object that contains 3 keys at the t
 
 Take a look at the dashboard at: https://shayna-ut.github.io/Bellybutton_Biodiversity/
 
-Choose the ID number of the Test Subject you are intersted in and watch the corresponding data be dispalyed.  
+Choose the ID number of the Test Subject you are intersted in and watch the corresponding data be dispalyed. Also, hover over the charts to see the otu_labels be displayed as well. 
+
+Take a sneak peek at the dashboard below:
