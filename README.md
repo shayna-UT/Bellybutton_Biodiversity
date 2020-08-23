@@ -12,4 +12,5 @@ For reference, the data is structured as an object that contains 3 keys at the t
   - otu_label: the corresponding species name for each bacterial ID
 
 Take a look at the dashboard at: https://shayna-ut.github.io/Bellybutton_Biodiversity/
+
 Choose the ID number of the Test Subject you are intersted in and watch the corresponding data be dispalyed.  
