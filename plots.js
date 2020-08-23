@@ -21,7 +21,8 @@ function init() {
           // the value property is also assigned the ID
           .property("value", sample);
       });
-})};
+    });
+};
 
 // Call the function
 init();
@@ -53,7 +54,7 @@ function buildMetadata(sample) {
         PANEL.html("");
         // Append H6 heading & print the demographic data of that volunteer to panel
         Object.entries(result).forEach(([key, value]) => {
-            console.log(key + ": " + value);
+            //console.log(key + ": " + value);
             PANEL.append("h6").text(key.toUpperCase() + ": " + value);
           });
     });
@@ -81,6 +82,7 @@ function buildCharts(sample){
             bacteriaObj.push({
                 value: sampleValues[i],
                 id: sampleOtuIdName[i],
+                idNumber: sampleOtuId[i],
                 label: sampleOtuLabel[i]
             });
         };
@@ -90,18 +92,67 @@ function buildCharts(sample){
         var topTenBacteria = sortedBacteria.slice(0,10);
         console.log(topTenBacteria);
 
-        var trace = {
+        // Build bar chart
+        var trace1 = {
             x : topTenBacteria.map((topTenBacteria) => topTenBacteria.value),
             y : topTenBacteria.map((topTenBacteria) => topTenBacteria.id),
             type : "bar",
-            orientation: "h"
+            orientation: "h",
+            text: topTenBacteria.map((topTenBacteria) => topTenBacteria.label)
         };
 
-        var layout= {
-            title: "Top 10 OTUs Found in Volunteer"
+        var layout1 = {
+            title: "Top 10 OTUs Found in Test Subject",
+            xaxis: {
+                title: "Sample Value"
+            },
+            yaxis: {
+                title: "OTU ID",
+                autorange: 'reversed'
+            },
         };
 
-        Plotly.newPlot("bar", [trace], layout);
+        Plotly.newPlot("bar", [trace1], layout1);
+
+        // Build Bubble Chart
+        var bubbleSize = bacteriaObj.map((bacteriaObj) => bacteriaObj.value);
+        //var desiredMaxMarkerSize = 40;
+
+        var trace2 = {
+            x : bacteriaObj.map((bacteriaObj) => bacteriaObj.idNumber),
+            y : bacteriaObj.map((bacteriaObj) => bacteriaObj.value),
+            text: bacteriaObj.map((bacteriaObj) => bacteriaObj.label),
+            mode: 'markers',
+            marker: {
+                color: bacteriaObj.map((bacteriaObj) => bacteriaObj.idNumber),
+                colorscale: "Rainbow",
+                size: bubbleSize,
+                sizemode: "diameter",
+                sizeref: 2,
+                //sizemode: "area",
+                //sizeref: 2.0 * Math.max(bubbleSize) / (desiredMaxMarkerSize ** 2),
+                sizemin: 5
+            }
+        };
+
+        var layout2 = {
+            //title: "Bubble Chart",
+            xaxis: {
+                title: "OTU ID"
+            },
+            yaxis: {
+                title: "Sample Values"
+            }
+        };
+
+        Plotly.newPlot("bubble", [trace2], layout2);
+
+        // Build a Gauge for washing frequency
+        var trace3 = {
+            domain: {x: [0,9], y: [0,9]}
+        };
+
+        Plotly.newPlot("gauge", [trace3]);
     });
 
 };
